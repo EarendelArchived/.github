@@ -59,7 +59,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: ${{ env.JDK_DIST }}
+          distribution: temurin  # TEMP
           java-version: ${{ env.JDK }}
           check-latest: true
           cache: 'gradle'
@@ -217,7 +217,7 @@ jobs:
       - name: Setup Java
         if: needs.check-dependencies.outputs.wrapper != ''
         uses: actions/setup-java@v3
-          distribution: ${{ env.JDK_DIST }}
+          distribution: temurin  # TEMP
           java-version: ${{ env.JDK }}
           check-latest: true
           cache: 'gradle'
@@ -313,7 +313,7 @@ jobs:
       
       - name: Setup Java
         uses: actions/setup-java@v3
-          distribution: ${{ env.JDK_DIST }}
+          distribution: temurin  # TEMP
           java-version: ${{ env.JDK }}
           check-latest: true
           cache: 'gradle'
@@ -369,7 +369,7 @@ jobs:
       
       - name: Setup Java
         uses: actions/setup-java@v3
-          distribution: ${{ env.JDK_DIST }}
+          distribution: temurin  # TEMP
           java-version: ${{ env.JDK }}
           check-latest: true
           cache: 'gradle'
@@ -476,7 +476,7 @@ jobs:
       
       - name: Setup Java
         uses: actions/setup-java@v3
-          distribution: ${{ env.JDK_DIST }}
+          distribution: temurin  # TEMP
           java-version: ${{ env.JDK }}
           check-latest: true
           cache: 'gradle'
