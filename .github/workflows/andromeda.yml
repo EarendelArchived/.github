@@ -30,7 +30,7 @@ env:
   PURPUR_REPO: PurpurMC/Purpur
   PURPUR_BRANCH: ver/1.19.3
 
-  PUFFERFISH_REPO: pufferfish-gg/Pufferfishj
+  PUFFERFISH_REPO: pufferfish-gg/Pufferfish
   PUFFERFISH_BRANCH: ver/1.19
 
 jobs:
@@ -266,31 +266,31 @@ jobs:
             upstream="Wrapper"
             if [ "$`echo . | cut -d "." -f 2`" == "$`echo ${{ needs.check-dependencies.outputs.wrapper }} | cut -d "." -f 3`" ]; then echo latest="${{ needs.check-dependencies.outputs.wrapper }}.0"; else echo latest="${{ needs.check-dependencies.outputs.wrapper }}"; fi
             if [ "$`echo . | cut -d "." -f 2`" == "$`echo ${{ needs.check-dependencies.outputs.wrapper_before }} | cut -d "." -f 3`" ]; then echo before="${{ needs.check-dependencies.outputs.wrapper_before }}.0"; else echo before="${{ needs.check-dependencies.outputs.wrapper_before }}"; fi
-            desc=$(curl --silent https://api.github.com/repos/$WRAPPER_REPO/comare/v$before...v$latest | jq -r '.commits[] | "$WRAPPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"'
+            desc=$(curl --silent https://api.github.com/repos/$WRAPPER_REPO/comare/v$before...v$latest | jq -r '.commits[] | "$WRAPPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nWrapper Changes:\n$desc"
           fi
 
           if [ "${{ needs.check-dependencies.outputs.shadow }}" != '' ]; then
             upstream="Shadow"
-            desc=$(curl --silent https://api.github.com/repos/$SHADOW_REPO/comare/${{ needs.check-dependencies.outputs.shadow }}...${{ needs.check-dependencies.outputs.shadow_before }} | jq -r '.commits[] | "$SHADOW_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"'
+            desc=$(curl --silent https://api.github.com/repos/$SHADOW_REPO/comare/${{ needs.check-dependencies.outputs.shadow }}...${{ needs.check-dependencies.outputs.shadow_before }} | jq -r '.commits[] | "$SHADOW_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nShadow Changes:\n$desc"
           fi
 
           if [ "${{ needs.check-dependencies.outputs.paperweight }}" != '' ]; then
             upstream="Paperweight"
-            desc=$(curl --silent https://api.github.com/repos/$PAPERWEIGHT_REPO/comare/${{ needs.check-dependencies.outputs.paperweight }}...${{ needs.check-dependencies.outputs.paperweight_before }} | jq -r '.commits[] | "$PAPERWEIGHT_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"'
+            desc=$(curl --silent https://api.github.com/repos/$PAPERWEIGHT_REPO/comare/${{ needs.check-dependencies.outputs.paperweight }}...${{ needs.check-dependencies.outputs.paperweight_before }} | jq -r '.commits[] | "$PAPERWEIGHT_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nPaperweight Changes:\n$desc"
           fi
 
           if [ "${{ needs.check-dependencies.outputs.paperclip }}" != '' ]; then
             upstream="Paperclip"
-            desc=$(curl --silent https://api.github.com/repos/$PAPERCLIP_REPO/comare/${{ needs.check-dependencies.outputs.paperclip }}...${{ needs.check-dependencies.outputs.paperclip_before }} | jq -r '.commits[] | "$PAPERCLIP_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"'
+            desc=$(curl --silent https://api.github.com/repos/$PAPERCLIP_REPO/comare/${{ needs.check-dependencies.outputs.paperclip }}...${{ needs.check-dependencies.outputs.paperclip_before }} | jq -r '.commits[] | "$PAPERCLIP_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nPaperclip Changes:\n$desc"
           fi
 
           if [ "${{ needs.check-dependencies.outputs.tiny }}" != '' ]; then
             upstream="Tiny Remapper"
-            desc=$(curl --silent https://api.github.com/repos/$TINY_REPO/comare/${{ needs.check-dependencies.outputs.tiny }}...${{ needs.check-dependencies.outputs.tiny_before }} | jq -r '.commits[] | "$TINY_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"'
+            desc=$(curl --silent https://api.github.com/repos/$TINY_REPO/comare/${{ needs.check-dependencies.outputs.tiny }}...${{ needs.check-dependencies.outputs.tiny_before }} | jq -r '.commits[] | "$TINY_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nTiny Remapper Changes:\n$desc"
           fi
 
