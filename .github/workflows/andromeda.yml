@@ -453,7 +453,7 @@ jobs:
   
   upstream-purpur:
     name: Upstream Purpur
-    step:
+    steps:
 
       - name: Checkout ${{ env.MAIN_NAME }}
         uses: actions/checkout@v3
