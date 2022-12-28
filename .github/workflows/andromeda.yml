@@ -28,6 +28,10 @@ env:
   PAPER_BRANCH: master
 
   PURPUR_REPO: PurpurMC/Purpur
+  PURPUR_BRANCH: ver/1.19.3
+
+  PUFFERFISH_REPO: pufferfish-gg/Pufferfishj
+  PUFFERFISH_BRANCH: ver/1.19
 
 jobs:
 
@@ -254,7 +258,7 @@ jobs:
           sed -i 's/remapper("net.fabricmc:tiny-remapper:.*:fat")/remapper("net.fabricmc:tiny-remapper:${{ needs.check-dependencies.outputs.tiny }}:fat")/' $MAIN_NAME/build.gradle.kts
       
       - name: Commit Changes
-        run:
+        run: |
           cd $MAIN_NAME
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]"
 
