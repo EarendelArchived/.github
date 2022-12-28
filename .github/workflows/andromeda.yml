@@ -300,7 +300,7 @@ jobs:
           git pull origin $MAIN_BRANCH
           git push origin $MAIN_BRANCH
 
-    needs: check-dependencies
+    needs: [setup, check-dependencies]
     runs-on: ${{ needs.setup.outputs.runner }}
     if: needs.check-dependencies.outputs.jdk != '' || needs.check-dependencies.outputs.wrapper != '' || needs.check-dependencies.outputs.shadow != '' || needs.check-dependencies.outputs.paperweight != '' || needs.check-dependencies.outputs.paperclip != '' || needs.check-dependencies.outputs.tiny != ''
   
@@ -350,7 +350,7 @@ jobs:
           git pull origin $MAIN_BRANCH
           git push origin $MAIN_BRANCH
 
-    needs: check-upstreams
+    needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
     if: needs.check-upstreams.outputs.paper != '' && needs.check-upstreams.outputs.pufferfish == '' && needs.check-upstreams.outputs.purpur == ''
 
@@ -451,7 +451,7 @@ jobs:
           git pull origin $MAIN_BRANCH
           git push origin $MAIN_BRANCH
 
-    needs: check-upstreams
+    needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
     if: needs.check-upstreams.outputs.pufferfish != '' && needs.check-upstreams.outputs.purpur == ''
   
@@ -599,6 +599,6 @@ jobs:
           git pull origin $MAIN_BRANCH
           git push origin $MAIN_BRANCH
 
-    needs: check-upstreams
+    needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
     if: needs.check-upstreams.outputs.purpur != ''
