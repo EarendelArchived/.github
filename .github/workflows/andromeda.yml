@@ -9,7 +9,7 @@ env:
 
   MAIN_NAME: Andromeda
   MAIN_REPO: TeamEarendel/Andromeda
-  MAIN_BRANCH: ver/1.19.3
+  MAIN_BRANCH: master
 
   JDK: 19.0.1+10
   JDK_DIST: temurin
