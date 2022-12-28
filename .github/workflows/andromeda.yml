@@ -178,7 +178,7 @@ jobs:
       - name: Check Paper Commit
         id: paper
         run: |
-          latest=$(curl --silent https://api.github.com/repos/$PAPER_REPO/commits?sha=$PAPER_BRANCH | jq -r ".[0].commit.tree.sha")
+          latest=$(curl --silent https://api.github.com/repos/$PAPER_REPO/commits?sha=$PAPER_BRANCH | jq -r ".[0].sha")
           current=$(cat $MAIN_NAME/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           echo "Current: $current, Latest: $latest"
           if [ "$latest" != "current" ]; then echo "latest=$latest" >> $GITHUB_OUTPUT; echo "Need Upstream"; fi
@@ -186,7 +186,7 @@ jobs:
       - name: Check Purpur Commit
         id: purpur
         run: |
-          latest=$(curl --silent https://api.github.com/repos/$PURPUR_REPO/commits?sha=$PURPUR_BRANCH | jq -r ".[0].commit.tree.sha")
+          latest=$(curl --silent https://api.github.com/repos/$PURPUR_REPO/commits?sha=$PURPUR_BRANCH | jq -r ".[0].sha")
           current=$(cat $MAIN_NAME/.upstream-data | grep purpurCommit | sed 's/purpurCommit = //')
           echo "Current: $current, Latest: $latest"
           if [ "$latest" != "current" ]; then echo "latest=$latest" >> $GITHUB_OUTPUT; echo "Need Upstream"; fi
@@ -194,7 +194,7 @@ jobs:
       - name: Check Pufferfish Commit
         id: pufferfish
         run: |
-          latest=$(curl --silent https://api.github.com/repos/$PUFFERFISH_REPO/commits?sha=$PUFFERFISH_BRANCH | jq -r ".[0].commit.tree.sha")
+          latest=$(curl --silent https://api.github.com/repos/$PUFFERFISH_REPO/commits?sha=$PUFFERFISH_BRANCH | jq -r ".[0].sha")
           current=$(cat $MAIN_NAME/.upstream-data | grep pufferfishCommit | sed 's/pufferfishCommit = //')
           echo "Current: $current, Latest: $latest"
           if [ "$latest" != "current" ]; then echo "latest=$latest" >> $GITHUB_OUTPUT; echo "Need Upstream"; fi
@@ -333,7 +333,7 @@ jobs:
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check-upstreams.outputs.paper }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
       
-      - name: Rebuild $MAIN_NAME
+      - name: Rebuild ${{ env.MAIN_NAME }}
         run: | 
           cd Prismarine
           ./gradlew rebuildPatches
@@ -352,7 +352,7 @@ jobs:
 
     needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
-    if: needs.check-upstreams.outputs.paper != '' || needs.check-upstreams.outputs.pufferfish == '' || needs.check-upstreams.outputs.purpur == ''
+    if: needs.check-upstreams.outputs.paper != '' && needs.check-upstreams.outputs.pufferfish == '' && needs.check-upstreams.outputs.purpur == ''
 
   upstream-pufferfish:
     name: Upstream Pufferfish
@@ -453,7 +453,7 @@ jobs:
 
     needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
-    if: needs.check-upstreams.outputs.pufferfish != '' || needs.check-upstreams.outputs.purpur == ''
+    if: needs.check-upstreams.outputs.pufferfish != '' && needs.check-upstreams.outputs.purpur == ''
   
   upstream-purpur:
     name: Upstream Purpur
