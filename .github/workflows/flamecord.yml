@@ -49,8 +49,6 @@ jobs:
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
           token: ${{ secrets.GH_PAT }}
-          lfs: true
-          submodules: true
 
       - name: Check JDK Version
         id: jdk
@@ -142,8 +140,6 @@ jobs:
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
           token: ${{ secrets.GH_PAT }}
-          lfs: true
-          submodules: true
       
       - name: Configuare Git
         run: |
