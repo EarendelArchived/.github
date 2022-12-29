@@ -441,11 +441,20 @@ jobs:
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../$MAIN_NAME/patches/server/0001-Pufferfish-Server-Changes.patch
 
       - name: Rebuild Patches
+        id: build
         run: |
           cd $MAIN_NAME/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check-upstreams.outputs.paper }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
           ./gradlew rebuildPatches
+      
+      - name: Upload Patches
+        if: failure()
+        needs: [build]
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.MAIN_NAME }}-patches
+          path: ${{ env.MAIN_NAME }}/patches
 
       - name: Commit changes
         run: |
@@ -547,6 +556,7 @@ jobs:
           ./gradlew rebuildPatches
 
       - name: Initial Purpur Sources
+        id: build_purpur
         run: |
           cd Purpur/
           purpur=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_OUTPUT
@@ -554,6 +564,14 @@ jobs:
           cp -rf ../Pufferfish/patches/api/*-Pufferfish-API-Changes.patch patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf ../Pufferfish/patches/server/*-Pufferfish-Server-Changes.patch patches/server/0001-Pufferfish-Server-Changes.patch
           ./gradlew applyPatches
+      
+      - name: Upload Purpur Patches
+        if: failure()
+        needs: [build_purpur]
+        uses: actions/upload-artifact@v3
+        with:
+          name: purpur-patches
+          path: Purpur/patches
 
       - name: Purpur Server Changes
         run: |
@@ -583,11 +601,20 @@ jobs:
           cp -rf patches/server/*-Purpur-Server-Changes.patch ../$MAIN_NAME/patches/server/0002-Purpur-Server-Changes.patch
 
       - name: Rebuild Patches
+        id: build
         run: |
           cd $MAIN_NAME/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check-upstreams.outputs.paper }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
           ./gradlew rebuildPatches
+      
+      - name: Upload ${{ env.MAIN_NAME }} Patches
+        if: failure()
+        needs: [build]
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.MAIN_NAME }}-patches
+          path: ${{ env.MAIN_NAME }}/patches
 
       - name: Commit changes
         run: |
@@ -698,11 +725,20 @@ jobs:
           ./gradlew rebuildPatches
 
       - name: Initial Purpur Sources
+        id: build_purpur
         run: |
           cd Purpur/
           purpur=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_OUTPUT
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check-dependencies.outputs.paper }}"'/' gradle.properties
           ./gradlew applyPatches
+      
+      - name: Upload Purpur Patches
+        if: failure()
+        needs: [build_purpur]
+        uses: actions/upload-artifact@v3
+        with:
+          name: purpur-patches
+          path: purpur/patches
 
       - name: Purpur Server Changes
         run: |
@@ -732,11 +768,20 @@ jobs:
           cp -rf patches/server/*-Purpur-Server-Changes.patch ../$MAIN_NAME/patches/server/0002-Purpur-Server-Changes.patch
 
       - name: Rebuild Patches
+        id: build
         run: |
           cd $MAIN_NAME/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check-upstreams.outputs.paper }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
           ./gradlew rebuildPatches
+      
+      - name: Upload ${{ env.MAIN_NAME }} Patches
+        if: failure()
+        needs: [build]
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.MAIN_NAME }}-patches
+          path: ${{ env.MAIN_NAME }}/patches
 
       - name: Commit changes
         run: |
