@@ -85,7 +85,7 @@ jobs:
 
           if [ "$latest" != "$current" ]; then
             echo "latest=$latest" >> $GITHUB_OUTPUT
-            echo "before=$current" >> $GITHUB_OUTPUT
+            echo "current=$current" >> $GITHUB_OUTPUT
             echo "Need Upstream"
           fi
       
@@ -98,7 +98,7 @@ jobs:
 
           if [ "$latest" != "$current" ]; then
             echo "latest=$latest" >> $GITHUB_OUTPUT
-            echo "before=$current" >> $GITHUB_OUTPUT
+            echo "current=$current" >> $GITHUB_OUTPUT
             echo "Need Upstream"
           fi
       
@@ -111,7 +111,7 @@ jobs:
 
           if [ "$latest" != "$current" ]; then
             echo "latest=$latest" >> $GITHUB_OUTPUT
-            echo "before=$current" >> $GITHUB_OUTPUT
+            echo "current=$current" >> $GITHUB_OUTPUT
             echo "Need Upstream"
           fi
       
@@ -124,7 +124,7 @@ jobs:
 
           if [ "$latest" != "$current" ]; then
             echo "latest=$latest" >> $GITHUB_OUTPUT
-            echo "before=$current" >> $GITHUB_OUTPUT
+            echo "current=$current" >> $GITHUB_OUTPUT
             echo "Need Upstream"
           fi
       
@@ -137,7 +137,7 @@ jobs:
 
           if [ "$latest" != "$current" ]; then
             echo "latest=$latest" >> $GITHUB_OUTPUT
-            echo "before=$current" >> $GITHUB_OUTPUT
+            echo "current=$current" >> $GITHUB_OUTPUT
             echo "Need Upstream"
           fi
       
@@ -150,7 +150,7 @@ jobs:
 
           if [ "$latest" != "$current" ]; then
             echo "latest=$latest" >> $GITHUB_OUTPUT
-            echo "before=$current" >> $GITHUB_OUTPUT
+            echo "current=$current" >> $GITHUB_OUTPUT
             echo "Need Upstream"
           fi
 
@@ -166,12 +166,12 @@ jobs:
       paperclip: ${{ steps.paperclip.outputs.latest }}
       tiny: ${{ steps.tiny.outputs.latest }}
 
-      jdk_before: ${{ steps.jdk.outputs.before }}
-      wrapper_before: ${{ steps.wrapper.outputs.before }}
-      shadow_before: ${{ steps.shadow.outputs.before }}
-      paperweight_before: ${{ steps.paperweight.outputs.before }}
-      paperclip_before: ${{ steps.paperclip.outputs.before }}
-      tiny_before: ${{ steps.tiny.outputs.before }}
+      jdk_current: ${{ steps.jdk.outputs.current }}
+      wrapper_current: ${{ steps.wrapper.outputs.current }}
+      shadow_current: ${{ steps.shadow.outputs.current }}
+      paperweight_current: ${{ steps.paperweight.outputs.current }}
+      paperclip_current: ${{ steps.paperclip.outputs.current }}
+      tiny_current: ${{ steps.tiny.outputs.current }}
 
   check-upstreams:
     name: Check Upstreams
@@ -197,8 +197,12 @@ jobs:
           latest=$(curl --silent https://api.github.com/repos/$PAPER_REPO/commits?sha=$PAPER_BRANCH | jq -r ".[0].sha")
           current=$(cat $MAIN_NAME/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           echo "Current: $current, Latest: $latest"
-          echo "current=$current" >> $GITHUB_OUTPUT
-          if [ "$latest" != "current" ]; then echo "latest=$latest" >> $GITHUB_OUTPUT; echo "Need Upstream"; fi
+
+          if [ "$latest" != "$current" ]; then
+            echo "latest=$latest" >> $GITHUB_OUTPUT
+            echo "current=$current" >> $GITHUB_OUTPUT
+            echo "Need Upstream"
+          fi
 
       - name: Check Purpur Commit
         id: purpur
@@ -206,8 +210,12 @@ jobs:
           latest=$(curl --silent https://api.github.com/repos/$PURPUR_REPO/commits?sha=$PURPUR_BRANCH | jq -r ".[0].sha")
           current=$(cat $MAIN_NAME/.upstream-data | grep purpurCommit | sed 's/purpurCommit = //')
           echo "Current: $current, Latest: $latest"
-          echo "current=$current" >> $GITHUB_OUTPUT
-          if [ "$latest" != "current" ]; then echo "latest=$latest" >> $GITHUB_OUTPUT; echo "Need Upstream"; fi
+
+          if [ "$latest" != "$current" ]; then
+            echo "latest=$latest" >> $GITHUB_OUTPUT
+            echo "current=$current" >> $GITHUB_OUTPUT
+            echo "Need Upstream"
+          fi
 
       - name: Check Pufferfish Commit
         id: pufferfish
@@ -215,8 +223,12 @@ jobs:
           latest=$(curl --silent https://api.github.com/repos/$PUFFERFISH_REPO/commits?sha=$PUFFERFISH_BRANCH | jq -r ".[0].sha")
           current=$(cat $MAIN_NAME/.upstream-data | grep pufferfishCommit | sed 's/pufferfishCommit = //')
           echo "Current: $current, Latest: $latest"
-          echo "current=$current" >> $GITHUB_OUTPUT
-          if [ "$latest" != "current" ]; then echo "latest=$latest" >> $GITHUB_OUTPUT; echo "Need Upstream"; fi
+
+          if [ "$latest" != "$current" ]; then
+            echo "latest=$latest" >> $GITHUB_OUTPUT
+            echo "current=$current" >> $GITHUB_OUTPUT
+            echo "Need Upstream"
+          fi
 
     needs: setup
     runs-on: ${{ needs.setup.outputs.runner }}
@@ -228,9 +240,9 @@ jobs:
       purpur: ${{ steps.purpur.outputs.latest }}
       pufferfish: ${{ steps.pufferfish.outputs.latest }}
 
-      paper_before: ${{ steps.paper.outputs.before }}
-      purpur_before: ${{ steps.purpur.outputs.before }}
-      pufferfish_before: ${{ steps.pufferfish.outputs.before }}
+      paper_current: ${{ steps.paper.outputs.current }}
+      purpur_current: ${{ steps.purpur.outputs.current }}
+      pufferfish_current: ${{ steps.pufferfish.outputs.current }}
   
   update-dependencies:
     name: Update Dependencies
@@ -291,32 +303,32 @@ jobs:
           if [ "${{ needs.check-dependencies.outputs.wrapper }}" != '' ]; then
             upstream="Wrapper"
             if [ "$`echo . | cut -d "." -f 2`" == "$`echo ${{ needs.check-dependencies.outputs.wrapper }} | cut -d "." -f 3`" ]; then echo latest="${{ needs.check-dependencies.outputs.wrapper }}.0"; else echo latest="${{ needs.check-dependencies.outputs.wrapper }}"; fi
-            if [ "$`echo . | cut -d "." -f 2`" == "$`echo ${{ needs.check-dependencies.outputs.wrapper_before }} | cut -d "." -f 3`" ]; then echo before="${{ needs.check-dependencies.outputs.wrapper_before }}.0"; else echo before="${{ needs.check-dependencies.outputs.wrapper_before }}"; fi
-            desc=$(curl --silent https://api.github.com/repos/$WRAPPER_REPO/comare/v$before...v$latest | jq -r '.commits[] | "$WRAPPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            if [ "$`echo . | cut -d "." -f 2`" == "$`echo ${{ needs.check-dependencies.outputs.wrapper_current }} | cut -d "." -f 3`" ]; then echo current="${{ needs.check-dependencies.outputs.wrapper_current }}.0"; else echo current="${{ needs.check-dependencies.outputs.wrapper_current }}"; fi
+            desc=$(curl --silent https://api.github.com/repos/$WRAPPER_REPO/comare/v$current...v$latest | jq -r '.commits[] | "$WRAPPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nWrapper Changes:\n$desc"
           fi
 
           if [ "${{ needs.check-dependencies.outputs.shadow }}" != '' ]; then
             upstream="Shadow"
-            desc=$(curl --silent https://api.github.com/repos/$SHADOW_REPO/comare/${{ needs.check-dependencies.outputs.shadow }}...${{ needs.check-dependencies.outputs.shadow_before }} | jq -r '.commits[] | "$SHADOW_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            desc=$(curl --silent https://api.github.com/repos/$SHADOW_REPO/comare/${{ needs.check-dependencies.outputs.shadow }}...${{ needs.check-dependencies.outputs.shadow_current }} | jq -r '.commits[] | "$SHADOW_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nShadow Changes:\n$desc"
           fi
 
           if [ "${{ needs.check-dependencies.outputs.paperweight }}" != '' ]; then
             upstream="Paperweight"
-            desc=$(curl --silent https://api.github.com/repos/$PAPERWEIGHT_REPO/comare/${{ needs.check-dependencies.outputs.paperweight }}...${{ needs.check-dependencies.outputs.paperweight_before }} | jq -r '.commits[] | "$PAPERWEIGHT_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            desc=$(curl --silent https://api.github.com/repos/$PAPERWEIGHT_REPO/comare/${{ needs.check-dependencies.outputs.paperweight }}...${{ needs.check-dependencies.outputs.paperweight_current }} | jq -r '.commits[] | "$PAPERWEIGHT_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nPaperweight Changes:\n$desc"
           fi
 
           if [ "${{ needs.check-dependencies.outputs.paperclip }}" != '' ]; then
             upstream="Paperclip"
-            desc=$(curl --silent https://api.github.com/repos/$PAPERCLIP_REPO/comare/${{ needs.check-dependencies.outputs.paperclip }}...${{ needs.check-dependencies.outputs.paperclip_before }} | jq -r '.commits[] | "$PAPERCLIP_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            desc=$(curl --silent https://api.github.com/repos/$PAPERCLIP_REPO/comare/${{ needs.check-dependencies.outputs.paperclip }}...${{ needs.check-dependencies.outputs.paperclip_current }} | jq -r '.commits[] | "$PAPERCLIP_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nPaperclip Changes:\n$desc"
           fi
 
           if [ "${{ needs.check-dependencies.outputs.tiny }}" != '' ]; then
             upstream="Tiny Remapper"
-            desc=$(curl --silent https://api.github.com/repos/$TINY_REPO/comare/${{ needs.check-dependencies.outputs.tiny }}...${{ needs.check-dependencies.outputs.tiny_before }} | jq -r '.commits[] | "$TINY_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            desc=$(curl --silent https://api.github.com/repos/$TINY_REPO/comare/${{ needs.check-dependencies.outputs.tiny }}...${{ needs.check-dependencies.outputs.tiny_current }} | jq -r '.commits[] | "$TINY_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nTiny Remapper Changes:\n$desc"
           fi
 
@@ -368,7 +380,7 @@ jobs:
         run: |
           cd $MAIN_NAME
 
-          desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PAPER_REPO/compare/${{ needs.check-upstreams.outputs.paper_before }}...${{ needs.check-upstreams.outputs.paper }} | jq -r '.commits[] | "$PAPER@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PAPER_REPO/compare/${{ needs.check-upstreams.outputs.paper_current }}...${{ needs.check-upstreams.outputs.paper }} | jq -r '.commits[] | "$PAPER@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
 
           git add .
           printf "Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$desc" | git commit -F -
@@ -420,7 +432,7 @@ jobs:
 
       - name: Copy Sources
         run: |
-          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' Andromeda/.upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' $MAIN_NAME/.upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -470,12 +482,12 @@ jobs:
 
           if [ "${{ needs.check-upstreams.outputs.paper }}" != '' ]; then
             upstream="Paper"
-            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PAPER_REPO/compare/${{ needs.check-upstreams.outputs.paper_before }}...${{ needs.check-upstreams.outputs.paper }} | jq -r '.commits[] | "$PAPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PAPER_REPO/compare/${{ needs.check-upstreams.outputs.paper_current }}...${{ needs.check-upstreams.outputs.paper }} | jq -r '.commits[] | "$PAPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nPaper Changes:\n$desc"
           fi
           
           if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-          desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PUFFERFISH_REPO/compare/${{ needs.check-upstreams.outputs.pufferfish_before }}...${{ steps.init.outputs.pufferfish }} | jq -r '.commits[] | "$PUFFERFISH_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PUFFERFISH_REPO/compare/${{ needs.check-upstreams.outputs.pufferfish_current }}...${{ steps.init.outputs.pufferfish }} | jq -r '.commits[] | "$PUFFERFISH_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           commit="$commit\n\nPufferfish Changes:\n$desc"
 
           git add .
@@ -535,7 +547,7 @@ jobs:
 
       - name: Copy Sources
         run: |
-          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' Andromeda/.upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' $MAIN_NAME/.upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -581,7 +593,7 @@ jobs:
 
       - name: Purpur Server Changes
         run: |
-          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' Andromeda/.upstream-data
+          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' $MAIN_NAME/.upstream-data
           cd Purpur/Purpur-Server/
           rm -rf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
@@ -626,18 +638,18 @@ jobs:
 
           if [ "${{ needs.check-upstreams.outputs.paper }}" != '' ]; then
             upstream="Paper"
-            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PAPER_REPO/compare/${{ needs.check-upstreams.outputs.paper_before }}...${{ needs.check-upstreams.outputs.paper }} | jq -r '.commits[] | "$PAPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PAPER_REPO/compare/${{ needs.check-upstreams.outputs.paper_current }}...${{ needs.check-upstreams.outputs.paper }} | jq -r '.commits[] | "$PAPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nPaper Changes:\n$desc"
           fi
           
           if [ "${{ needs.check-upstreams.outputs.paper }}" != '' ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PUFFERFISH_REPO/compare/${{ needs.check-upstreams.outputs.pufferfish_before }}...${{ steps.init.outputs.pufferfish }} | jq -r '.commits[] | "$PUFFERFISH_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PUFFERFISH_REPO/compare/${{ needs.check-upstreams.outputs.pufferfish_current }}...${{ steps.init.outputs.pufferfish }} | jq -r '.commits[] | "$PUFFERFISH_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nPufferfish Changes:\n$desc"
           fi
 
           if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
-          desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PURPUR_REPO/compare/${{ needs.check-upstreams.outputs.purpur_before }}...${{ steps.init.outputs.purpur }} | jq -r '.commits[] | "$PURPUR_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PURPUR_REPO/compare/${{ needs.check-upstreams.outputs.purpur_current }}...${{ steps.init.outputs.purpur }} | jq -r '.commits[] | "$PURPUR_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           commit="$commit\n\nPurpur Changes:\n$desc"
 
           git add .
@@ -700,7 +712,7 @@ jobs:
 
       - name: Copy Sources
         run: |
-          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' Andromeda/.upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' $MAIN_NAME/.upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -744,7 +756,7 @@ jobs:
 
       - name: Purpur Server Changes
         run: |
-          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' Andromeda/.upstream-data
+          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' $MAIN_NAME/.upstream-data
           cd Purpur/Purpur-Server/
           rm -rf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
@@ -789,18 +801,18 @@ jobs:
 
           if [ "${{ needs.check-upstreams.outputs.paper }}" != '' ]; then
             upstream="Paper"
-            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PAPER_REPO/compare/${{ needs.check-upstreams.outputs.paper_before }}...${{ needs.check-upstreams.outputs.paper }} | jq -r '.commits[] | "$PAPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PAPER_REPO/compare/${{ needs.check-upstreams.outputs.paper_current }}...${{ needs.check-upstreams.outputs.paper }} | jq -r '.commits[] | "$PAPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nPaper Changes:\n$desc"
           fi
           
           if [ "${{ needs.check-upstreams.outputs.paper }}" != '' ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PUFFERFISH_REPO/compare/${{ needs.check-upstreams.outputs.pufferfish_before }}...${{ steps.init.outputs.pufferfish }} | jq -r '.commits[] | "$PUFFERFISH_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PUFFERFISH_REPO/compare/${{ needs.check-upstreams.outputs.pufferfish_current }}...${{ steps.init.outputs.pufferfish }} | jq -r '.commits[] | "$PUFFERFISH_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             commit="$commit\n\nPufferfish Changes:\n$desc"
           fi
 
           if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
-          desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PURPUR_REPO/compare/${{ needs.check-upstreams.outputs.purpur_before }}...${{ steps.init.outputs.purpur }} | jq -r '.commits[] | "$PURPUR_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          desc=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$PURPUR_REPO/compare/${{ needs.check-upstreams.outputs.purpur_current }}...${{ steps.init.outputs.purpur }} | jq -r '.commits[] | "$PURPUR_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           commit="$commit\n\nPurpur Changes:\n$desc"
 
           git add .
