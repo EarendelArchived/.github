@@ -43,13 +43,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       runner: ${{ steps.setup.outputs.runner }}
-      edited_pufferfish: ${{ steps.setup.outputs.edited_pufferfish }}
     steps:
-      - name: Initialize latestiables
+      - name: Initialize Variables
         id: setup
         run: |
           echo "runner=$OS" >> $GITHUB_OUTPUT
-          echo "edited_pufferfish=$EDITED_PUFFERFISH" >> $GITHUB_OUTPUT
 
   check-dependencies:
     name: Check Dependencies
@@ -170,6 +168,12 @@ jobs:
     name: Check Upstreams
     steps:
 
+      - name: Initialize Variables
+        id: init
+        run: |
+          echo "runner=$OS" >> $GITHUB_OUTPUT
+          echo "edited_pufferfish=$EDITED_PUFFERFISH" >> $GITHUB_OUTPUT
+
       - name: Checkout ${{ env.MAIN_NAME }}
         uses: actions/checkout@v3
         with:
@@ -205,6 +209,8 @@ jobs:
     needs: setup
     runs-on: ${{ needs.setup.outputs.runner }}
     outputs:
+      runner: ${{ steps.init.outputs.runner }}
+      edited_pufferfish: ${{ steps.init.outputs.edited_pufferfish }}
       paper: ${{ steps.paper.outputs.latest }}
       purpur: ${{ steps.purpur.outputs.latest }}
       pufferfish: ${{ steps.pufferfish.outputs.latest }}
@@ -353,8 +359,8 @@ jobs:
           git pull origin $MAIN_BRANCH
           git push origin $MAIN_BRANCH
 
-    needs: [setup, check-upstreams]
-    runs-on: ${{ needs.setup.outputs.runner }}
+    needs: [check-upstreams]
+    runs-on: ${{ needs.check-upstreams.outputs.runner }}
     if: needs.check-upstreams.outputs.paper != '' && needs.check-upstreams.outputs.pufferfish == '' && needs.check-upstreams.outputs.purpur == ''
 
   upstream-pufferfish:
@@ -454,9 +460,9 @@ jobs:
           git pull origin $MAIN_BRANCH
           git push origin $MAIN_BRANCH
 
-    needs: [setup, check-upstreams]
-    runs-on: ${{ needs.setup.outputs.runner }}
-    if: needs.check-upstreams.outputs.pufferfish != '' && needs.check-upstreams.outputs.purpur == '' && needs.setup.outputs.edited_pufferfish != 'true'
+    needs: [check-upstreams]
+    runs-on: ${{ needs.check-upstreams.outputs.runner }}
+    if: needs.check-upstreams.outputs.pufferfish != '' && needs.check-upstreams.outputs.purpur == '' && needs.check-upstreams.outputs.edited_pufferfish != 'true'
   
   upstream-purpur:
     name: Upstream Purpur
@@ -602,9 +608,9 @@ jobs:
           git pull origin $MAIN_BRANCH
           git push origin $MAIN_BRANCH
 
-    needs: [setup, check-upstreams]
-    runs-on: ${{ needs.setup.outputs.runner }}
-    if: needs.check-upstreams.outputs.purpur != '' && needs.setup.outputs.edited_pufferfish != 'true'
+    needs: [check-upstreams]
+    runs-on: ${{ needs.check-upstreams.outputs.runner }}
+    if: needs.check-upstreams.outputs.purpur != '' && needs.check-upstreams.outputs.edited_pufferfish != 'true'
   
   upstream-purpur-edited:
     name: Upstream Purpur (Edited)
@@ -751,6 +757,6 @@ jobs:
           git pull origin $MAIN_BRANCH
           git push origin $MAIN_BRANCH
 
-    needs: [setup, check-upstreams]
-    runs-on: ${{ needs.setup.outputs.runner }}
-    if: needs.check-upstreams.outputs.purpur != '' && needs.setup.outputs.edited_pufferfish == 'true'
+    needs: [check-upstreams]
+    runs-on: ${{ needs.check-upstreams.outputs.runner }}
+    if: needs.check-upstreams.outputs.purpur != '' && needs.check-upstreams.outputs.edited_pufferfish == 'true'
