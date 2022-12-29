@@ -53,6 +53,11 @@ jobs:
     name: Check Dependencies
     steps:
 
+      - name: Initialize Variables
+        id: init
+        run: |
+          echo "runner=$OS" >> $GITHUB_OUTPUT
+
       - name: Checkout ${{ env.MAIN_NAME }}
         uses: actions/checkout@v3
         with:
@@ -150,6 +155,8 @@ jobs:
     needs: setup
     runs-on: ${{ needs.setup.outputs.runner }}
     outputs:
+      runner: ${{ steps.init.outputs.runner }}
+
       jdk: ${{ steps.jdk.outputs.latest }}
       wrapper: ${{ steps.wrapper.outputs.latest }}
       shadow: ${{ steps.shadow.outputs.latest }}
@@ -309,8 +316,8 @@ jobs:
           git pull origin $MAIN_BRANCH
           git push origin $MAIN_BRANCH
 
-    needs: [setup, check-dependencies]
-    runs-on: ${{ needs.setup.outputs.runner }}
+    needs: [check-dependencies]
+    runs-on: ${{ needs.check-dependencies.outputs.runner }}
     if: needs.check-dependencies.outputs.wrapper != '' || needs.check-dependencies.outputs.shadow != '' || needs.check-dependencies.outputs.paperweight != '' || needs.check-dependencies.outputs.paperclip != '' || needs.check-dependencies.outputs.tiny != '' # || needs.check-dependencies.outputs.jdk != 
   
   upstream-paper:
