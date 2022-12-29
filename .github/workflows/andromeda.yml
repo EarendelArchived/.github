@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
 
 env:
-  VARIABLE_EDITED_PUFFERFISH: true
+  EDITED_PUFFERFISH: true
 
-  os: ubuntu-latest
+  OS: ubuntu-latest
 
   MAIN_NAME: Andromeda
   MAIN_REPO: TeamEarendel/Andromeda
@@ -43,12 +43,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       runner: ${{ steps.setup.outputs.runner }}
-      checkout: ${{ steps.setup.outputs.checkout }}
+      edited_pufferfish: ${{ steps.setup.outputs.edited_pufferfish }}
     steps:
       - name: Initialize latestiables
         id: setup
         run: |
-          echo "runner=$os" >> $GITHUB_OUTPUT
+          echo "runner=$OS" >> $GITHUB_OUTPUT
+          echo "edited_pufferfish=$EDITED_PUFFERFISH" >> $GITHUB_OUTPUT
 
   check-dependencies:
     name: Check Dependencies
@@ -304,7 +305,7 @@ jobs:
 
     needs: [setup, check-dependencies]
     runs-on: ${{ needs.setup.outputs.runner }}
-    if: needs.check-dependencies.outputs.wrapper != '' || needs.check-dependencies.outputs.shadow != '' || needs.check-dependencies.outputs.paperweight != '' || needs.check-dependencies.outputs.paperclip != '' || needs.check-dependencies.outputs.tiny != '' # || needs.check-dependencies.outputs.jk != ''
+    if: needs.check-dependencies.outputs.wrapper != '' || needs.check-dependencies.outputs.shadow != '' || needs.check-dependencies.outputs.paperweight != '' || needs.check-dependencies.outputs.paperclip != '' || needs.check-dependencies.outputs.tiny != '' # || needs.check-dependencies.outputs.jdk != 
   
   upstream-paper:
     name: Upstream Paper
@@ -455,7 +456,7 @@ jobs:
 
     needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
-    if: ${{ needs.check-upstreams.outputs.pufferfish != '' && needs.check-upstreams.outputs.purpur == '' && env.VARIABLE_EDITED_PUFFERFISH != 'true' }}
+    if: needs.check-upstreams.outputs.pufferfish != '' && needs.check-upstreams.outputs.purpur == '' && needs.setup.outputs.edited_pufferfish != 'true'
   
   upstream-purpur:
     name: Upstream Purpur
@@ -603,7 +604,7 @@ jobs:
 
     needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
-    if: ${{ needs.check-upstreams.outputs.purpur != '' && env.VARIABLE_EDITED_PUFFERFISH != 'true' }}
+    if: needs.check-upstreams.outputs.purpur != '' && needs.setup.outputs.edited_pufferfish != 'true'
   
   upstream-purpur-edited:
     name: Upstream Purpur (Edited)
@@ -752,4 +753,4 @@ jobs:
 
     needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
-    if: ${{ needs.check-upstreams.outputs.purpur != '' && env.VARIABLE_EDITED_PUFFERFISH == 'true' }}
+    if: needs.check-upstreams.outputs.purpur != '' && needs.setup.outputs.edited_pufferfish == 'true'
