@@ -455,7 +455,7 @@ jobs:
 
     needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
-    if: needs.check-upstreams.outputs.pufferfish != '' && needs.check-upstreams.outputs.purpur == '' && env.VARIABLE_EDITED_PUFFERFISH != 'true'
+    if: ${{ needs.check-upstreams.outputs.pufferfish != '' && needs.check-upstreams.outputs.purpur == '' && env.VARIABLE_EDITED_PUFFERFISH != 'true' }}
   
   upstream-purpur:
     name: Upstream Purpur
@@ -603,7 +603,7 @@ jobs:
 
     needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
-    if: needs.check-upstreams.outputs.purpur != '' && env.VARIABLE_EDITED_PUFFERFISH != 'true'
+    if: ${{ needs.check-upstreams.outputs.purpur != '' && env.VARIABLE_EDITED_PUFFERFISH != 'true' }}
   
   upstream-purpur-edited:
     name: Upstream Purpur (Edited)
@@ -752,4 +752,4 @@ jobs:
 
     needs: [setup, check-upstreams]
     runs-on: ${{ needs.setup.outputs.runner }}
-    if: needs.check-upstreams.outputs.purpur != '' && env.VARIABLE_EDITED_PUFFERFISH == 'true'
+    if: ${{ needs.check-upstreams.outputs.purpur != '' && env.VARIABLE_EDITED_PUFFERFISH == 'true' }}
