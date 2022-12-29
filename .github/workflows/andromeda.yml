@@ -3,6 +3,8 @@ name: Scheduled Upstream (Andromeda/1.19.3)
 on:
   push:
   workflow_dispatch:
+  schedule:
+    - cron: "*/20 * * * *"
 
 env:
   EDITED_PUFFERFISH: true
@@ -64,7 +66,7 @@ jobs:
           repository: ${{ env.MAIN_REPO }}
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
-          # token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}
 
       - name: Setup Java
         uses: actions/setup-java@v3
@@ -187,7 +189,7 @@ jobs:
           repository: ${{ env.MAIN_REPO }}
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
-          # token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}
 
       - name: Check Paper Commit
         id: paper
@@ -195,6 +197,7 @@ jobs:
           latest=$(curl --silent https://api.github.com/repos/$PAPER_REPO/commits?sha=$PAPER_BRANCH | jq -r ".[0].sha")
           current=$(cat $MAIN_NAME/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           echo "Current: $current, Latest: $latest"
+          echo "current=$current" >> $GITHUB_OUTPUT
           if [ "$latest" != "current" ]; then echo "latest=$latest" >> $GITHUB_OUTPUT; echo "Need Upstream"; fi
 
       - name: Check Purpur Commit
@@ -203,6 +206,7 @@ jobs:
           latest=$(curl --silent https://api.github.com/repos/$PURPUR_REPO/commits?sha=$PURPUR_BRANCH | jq -r ".[0].sha")
           current=$(cat $MAIN_NAME/.upstream-data | grep purpurCommit | sed 's/purpurCommit = //')
           echo "Current: $current, Latest: $latest"
+          echo "current=$current" >> $GITHUB_OUTPUT
           if [ "$latest" != "current" ]; then echo "latest=$latest" >> $GITHUB_OUTPUT; echo "Need Upstream"; fi
 
       - name: Check Pufferfish Commit
@@ -211,6 +215,7 @@ jobs:
           latest=$(curl --silent https://api.github.com/repos/$PUFFERFISH_REPO/commits?sha=$PUFFERFISH_BRANCH | jq -r ".[0].sha")
           current=$(cat $MAIN_NAME/.upstream-data | grep pufferfishCommit | sed 's/pufferfishCommit = //')
           echo "Current: $current, Latest: $latest"
+          echo "current=$current" >> $GITHUB_OUTPUT
           if [ "$latest" != "current" ]; then echo "latest=$latest" >> $GITHUB_OUTPUT; echo "Need Upstream"; fi
 
     needs: setup
@@ -218,9 +223,14 @@ jobs:
     outputs:
       runner: ${{ steps.init.outputs.runner }}
       edited_pufferfish: ${{ steps.init.outputs.edited_pufferfish }}
+
       paper: ${{ steps.paper.outputs.latest }}
       purpur: ${{ steps.purpur.outputs.latest }}
       pufferfish: ${{ steps.pufferfish.outputs.latest }}
+
+      paper_before: ${{ steps.paper.outputs.before }}
+      purpur_before: ${{ steps.purpur.outputs.before }}
+      pufferfish_before: ${{ steps.pufferfish.outputs.before }}
   
   update-dependencies:
     name: Update Dependencies
@@ -232,7 +242,7 @@ jobs:
           repository: ${{ env.MAIN_REPO }}
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
-          # token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}
       
       - name: Setup Java
         if: needs.check-dependencies.outputs.wrapper != ''
@@ -330,7 +340,7 @@ jobs:
           repository: ${{ env.MAIN_REPO }}
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
-          # token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}
       
       - name: Setup Java
         uses: actions/setup-java@v3
@@ -380,7 +390,7 @@ jobs:
           repository: ${{ env.MAIN_REPO }}
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
-          # token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}
 
       - name: Checkout Pufferfish
         uses: actions/checkout@v3
@@ -488,7 +498,7 @@ jobs:
           repository: ${{ env.MAIN_REPO }}
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
-          # token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}
 
       - name: Checkout Pufferfish
         uses: actions/checkout@v3
@@ -650,7 +660,7 @@ jobs:
           repository: ${{ env.MAIN_REPO }}
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
-          # token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}
 
       - name: Checkout Pufferfish
         uses: actions/checkout@v3
