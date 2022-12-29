@@ -149,7 +149,7 @@ jobs:
       mbedtls_before: ${{ steps.mbedtls.outputs.before }}
 
   dependencies:
-    name: Upstream
+    name: Update Dependencies
     steps:
 
       - name: Checkout ${{ env.MAIN_NAME }}
@@ -210,7 +210,8 @@ jobs:
         if: needs.check.outputs.flamecord != ''
         run: |
           cd $MAIN_NAME
-          git pull --no-commit https://github.com/$FLAMECORD_REPO master
+          git remote add upstream https://github.com/$FLAMECORD_REPO
+          git pull --no-commit upstream master
           sed -i 's/flamecord = .*/flamecord = '"${{ needs.check.outputs.flamecord }}"'/' $MAIN_NAME/.build-data
 
       - name: Update Waterfall Build Data
