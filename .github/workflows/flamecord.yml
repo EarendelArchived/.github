@@ -52,25 +52,14 @@ jobs:
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
           token: ${{ secrets.GH_PAT }}
+          lfs: true
+          submodules: true
 
       - name: Check JDK Version
         id: jdk
         run: |
           latest=$(curl --silent https://api.github.com/repos/$JDK_REPO/releases/latest | jq -r ".tag_name" | cut -c 5-)
           current=$(cat $MAIN_NAME/.github/workflows/build.yml | grep jdk: | cut -d "[" -f 2 | cut -d "]" -f 1)
-          echo "Current: $current, Latest: $latest"
-
-          if [ "$latest" != "$current" ]; then
-            echo "latest=$latest" >> $GITHUB_OUTPUT
-            echo "current=$current" >> $GITHUB_OUTPUT
-            echo "Need Upstream"
-          fi
-      
-      - name: Check Gradle Wrapper Version
-        id: wrapper
-        run: |
-          latest=$(curl --silent https://services.gradle.org/versions/current | jq -r ".version")
-          current=$(cd $MAIN_NAME && ./gradlew -v | grep Gradle | grep -v ! | cut -d " " -f 2)
           echo "Current: $current, Latest: $latest"
 
           if [ "$latest" != "$current" ]; then
@@ -133,10 +122,7 @@ jobs:
       runner: ${{ steps.init.outputs.runner }}
 
       jdk: ${{ steps.jdk.outputs.latest }}
-      wrapper: ${{ steps.wrapper.outputs.latest }}
-
       jdk_before: ${{ steps.jdk.outputs.before }}
-      wrapper_before: ${{ steps.wrapper.outputs.before }}
 
       flamecord: ${{ steps.flamecord.outputs.latest }}
       waterfall: ${{ steps.waterfall.outputs.latest }}
@@ -147,49 +133,6 @@ jobs:
       waterfall_before: ${{ steps.waterfall.outputs.before }}
       bungeecord_before: ${{ steps.bungeecord.outputs.before }}
       mbedtls_before: ${{ steps.mbedtls.outputs.before }}
-
-  dependencies:
-    name: Update Dependencies
-    steps:
-
-      - name: Checkout ${{ env.MAIN_NAME }}
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ env.MAIN_REPO }}
-          path: ${{ env.MAIN_NAME }}
-          ref: ${{ env.MAIN_BRANCH }}
-          token: ${{ secrets.GH_PAT }}
-
-      - name: Setup Java
-        if: needs.check-dependencies.outputs.wrapper != ''
-        uses: actions/setup-java@v3
-        with:
-          distribution: ${{ env.JDK_DIST }}
-          java-version: ${{ env.JDK }}
-          check-latest: true
-          cache: 'gradle'
-
-      - name: Update Gradle Wrapper
-        run: |
-          cd $MAIN_NAME && ./gradlew wrapper --gradle-version=${{ needs.check-dependencies.outputs.wrapper }}
-
-      - name: Commit Changes
-        run: |
-          cd $MAIN_NAME
-
-          if [ "$`echo . | cut -d "." -f 2`" == "$`echo ${{ needs.check-dependencies.outputs.wrapper }} | cut -d "." -f 3`" ]; then echo latest="${{ needs.check-dependencies.outputs.wrapper }}.0"; else echo latest="${{ needs.check-dependencies.outputs.wrapper }}"; fi
-          if [ "$`echo . | cut -d "." -f 2`" == "$`echo ${{ needs.check-dependencies.outputs.wrapper_before }} | cut -d "." -f 3`" ]; then echo before="${{ needs.check-dependencies.outputs.wrapper_before }}.0"; else echo before="${{ needs.check-dependencies.outputs.wrapper_before }}"; fi
-          desc=$(curl --silent https://api.github.com/repos/$WRAPPER_REPO/comare/v$before...v$latest | jq -r '.commits[] | "$WRAPPER_REPO@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-
-          git add .
-          printf "Updated Dependencies (Wrapper)\n\nDependencies has released updates that appear to apply and compile correctly\n\nWrapper Changes:\n$desc" | git commit -F -
-          git fetch
-          git pull origin $MAIN_BRANCH
-          git push origin $MAIN_BRANCH
-
-    needs: check
-    runs-on: ${{ needs.check.outputs.runner }}
-    if: needs.check.outputs.wrapper != ''
 
   upstream:
     name: Upstream
@@ -202,6 +145,8 @@ jobs:
           path: ${{ env.MAIN_NAME }}
           ref: ${{ env.MAIN_BRANCH }}
           token: ${{ secrets.GH_PAT }}
+          lfs: true
+          submodules: true
       
       - name: Configuare Git
         run: git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]"
