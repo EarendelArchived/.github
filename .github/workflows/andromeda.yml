@@ -1,10 +1,7 @@
 name: Scheduled Upstream (Andromeda/1.19.3)
 
 on:
-  push:
   workflow_dispatch:
-  schedule:
-    - cron: "*/20 * * * *"
 
 env:
   EDITED_PUFFERFISH: true
@@ -432,7 +429,7 @@ jobs:
 
       - name: Copy Sources
         run: |
-          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' $MAIN_NAME/.upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ steps.init.outputs.pufferfish }}"'/' $MAIN_NAME/.upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -547,7 +544,7 @@ jobs:
 
       - name: Copy Sources
         run: |
-          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' $MAIN_NAME/.upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ steps.init.outputs.pufferfish }}"'/' $MAIN_NAME/.upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -576,6 +573,7 @@ jobs:
           ./gradlew rebuildPatches
 
       - name: Initial Purpur Sources
+        id: init_purpur
         run: |
           cd Purpur/
           purpur=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_OUTPUT
@@ -593,7 +591,7 @@ jobs:
 
       - name: Purpur Server Changes
         run: |
-          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' $MAIN_NAME/.upstream-data
+          sed -i 's/purpur = .*/purpur = '"${{ steps.init_purpur.outputs.purpur }}"'/' $MAIN_NAME/.upstream-data
           cd Purpur/Purpur-Server/
           rm -rf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
@@ -712,7 +710,7 @@ jobs:
 
       - name: Copy Sources
         run: |
-          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' $MAIN_NAME/.upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ steps.init.outputs.pufferfish }}"'/' $MAIN_NAME/.upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -741,6 +739,7 @@ jobs:
           ./gradlew rebuildPatches
 
       - name: Initial Purpur Sources
+        id: init_purpur
         run: |
           cd Purpur/
           purpur=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_OUTPUT
@@ -756,7 +755,7 @@ jobs:
 
       - name: Purpur Server Changes
         run: |
-          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' $MAIN_NAME/.upstream-data
+          sed -i 's/purpur = .*/purpur = '"${{ steps.init_purpur.outputs.purpur }}"'/' $MAIN_NAME/.upstream-data
           cd Purpur/Purpur-Server/
           rm -rf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
