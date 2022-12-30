@@ -1,6 +1,7 @@
 name: Scheduled Upstream (Flamecord)
 
 on:
+  push:
   workflow_dispatch:
 
 env:
@@ -153,7 +154,7 @@ jobs:
           cd $MAIN_NAME
           git remote add upstream https://github.com/$FLAMECORD_REPO
           git fetch upstream
-          git pull --no-commit upstream master
+          git pull --no-commit --allow-unrelated-histories upstream master
           sed -i 's/flamecord = .*/flamecord = '"${{ needs.check.outputs.flamecord }}"'/' $MAIN_NAME/.build-data
 
       - name: Update Waterfall Build Data
