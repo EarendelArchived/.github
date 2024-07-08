@@ -1,4 +1,1 @@
-# Team Earendel
-Work In Progress!
-
-### Members
+# Moved: [TeamEarendel](https://github.com/orgs/TeamEarendel)
